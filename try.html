@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Testing & Fetching Data from APi</title>
+    <style>
+        body{
+            background-image: url('weather.jpg');
+            background-size: cover;
+            
+        }
+        .weather-container{
+            padding: 0;
+        }
+    
+    </style>
+</head>
+<body>
+    <div class="weather-container" >
+        <div class="weather-box">
+            <h2 id="temperature"></h2>
+            <h4 id="condition"></h4>
+            <h4 id="location"></h4>
+            <img id="weather-icon" alt="Weather Icon">
+            
+        </div>
+        <br>
+        <input style="background-color: transparent; border-color: white;" type="text" placeholder="Enter a location" id="search-bar">
+        <br>
+        <br>
+        <button style="background-color: transparent; border-color: white;" onclick="searchWeather()" id="search-btn">Search</button>
+    </div>
+
+    <script>
+        function api(location) {
+            fetch(`http://api.weatherapi.com/v1/current.json?key=c07b505dac8943168b7123035231012&q=${location}&aqi=no`)
+                .then(res => res.json())
+                .then(data => displayWeather(data))
+                .catch(error => console.error('Error fetching weather data:', error));
+        }
+
+        function displayWeather(data) {
+            const weatherIconElement = document.getElementById('weather-icon');
+            const temperatureElement = document.getElementById('temperature');
+            const conditionElement = document.getElementById('condition');
+            const locationElement = document.getElementById('location');
+            
+            // jo jahan zaroorat ho
+            // {
+            //   temp f ->  data.current.temp_f
+            //   temp c ->  data.current.temp_c
+            //   city ->  data.location.name
+            //   Region ->  data.location.region
+            //   Country ->  data.location.country
+            //   Weather Condition ->  data.current.condition.text
+            //   Weather Icon -> data.current.condition.icon
+            // }
+
+            const weatherIconCode = data.current.condition.icon;
+            const temperature = data.current.temp_c;
+            const condition = data.current.condition.text;
+            const location = `${data.location.name}, ${data.location.region}, ${data.location.country}`;
+
+            temperatureElement.textContent = `Temperature: ${temperature}°C`;
+            conditionElement.textContent = `Condition: ${condition}`;
+            locationElement.textContent = `Location: ${location}`;
+            weatherIconElement.src = `http:${weatherIconCode}`;
+        }
+    
+
+        function searchWeather() {
+            // yeh search bar sy deal kre ga
+
+            const searchBar = document.getElementById('search-bar');
+            const location = searchBar.value;
+
+            if (location === '') {
+                alert('Please enter a location.');
+                return;
+            }
+
+            api(location);
+        }
+
+    </script>
+</body>
+</html>
